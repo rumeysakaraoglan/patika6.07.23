@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX_USERS 100
+
+struct User {
+    char name[50];
+    int accountNumber;
+    float balance;
+};
+
+struct User users[MAX_USERS];
+int userCount = 0;
+
+void saveDataToFile() {
+    FILE *file = fopen("bank_data.txt", "w");
+    if (file == NULL) {
+        printf("Dosya oluşturulamadı!");
+        return;
+    }
+
+    for (int i = 0; i < userCount; i++) {
+        fprintf(file, "%s %d %.2f\n", users[i].name, users[i].accountNumber, users[i].balance);
+    }
+
+    fclose(file);
+}
+
+void loadDataFromFile() {
+    FILE *file = fopen("bank_data.txt", "r");
+    if (file == NULL) {
+        printf("Dosya bulunamadı!\n");
+        return;
+    }
+
+    while (!feof(file)) {
+        fscanf(file, "%s %d %f", users[userCount].name, &users[userCount].accountNumber, &users[userCount].balance);
+        userCount++;
+    }
+
+    fclose(file);
+}
+
+void createUser() {
+    if (userCount >= MAX_USERS) {
+        printf("Maksimum kullanıcı sayısına ulaşıldı!\n");
+        return;
+    }
+
+    printf("Adınız: ");
+    scanf("%s", users[userCount].name);
+    printf("Hesap Numaranız: ");
+    scanf("%d", &users[userCount].accountNumber);
+    printf("Başlangıç Bakiyeniz: ");
+    scanf("%f", &users[userCount].balance);
+
+    userCount++;
+
+    printf("Yeni kullanıcı oluşturuldu!\n");
+}
+
+void updateUser() {
+    int accountNumber;
+    printf("Güncellenecek hesap numarası: ");
+    scanf("%d", &accountNumber);
+
+    int i;
+    bool found = false;
+
+    for (i = 0; i < userCount; i++) {
+        if (users[i].accountNumber == accountNumber) {
+            found = true;
+            break;
+        }
+    }
+
+    if (found) {
+        printf("Yeni adınız: ");
+        scanf("%s", users[i].name);
+        printf("Yeni bakiyeniz: ");
+        scanf("%f", &users[i].balance);
+
+        printf("Hesap güncellendi!\n");
+    } else {
+        printf("Hesap bulunamadı!\n");
+    }
+}
+
+void deleteUser() {
+    int accountNumber;
+    printf("Silinecek hesap numarası: ");
+    scanf("%d", &accountNumber);
+
+    int i;
+    bool found = false;
+
+    for (i = 0; i < userCount; i++) {
+        if (users[i].accountNumber == accountNumber) {
+            found = true;
+            break;
+        }
+    }
+
+    if (found) {
+        for (int j = i; j < userCount - 1; j++) {
+            users[j] = users[j + 1];
+        }
+
+        userCount--;
+
+        printf("Hesap silindi!\n");
+    } else {
+        printf("Hesap bulunamadı!\n");
+    }
+}
+
+void depositMoney() {
+    int accountNumber;
+    float amount;
+
+    printf("Hesap numaranız: ");
+    scanf("%d", &accountNumber);
+
+    int i;
+    bool
