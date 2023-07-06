@@ -1,0 +1,218 @@
+cevap1:
+
+#include <stdio.h>
+
+int findMax(int arr[], int size) {
+    int max = arr[0]; // Başlangıçta en büyük sayıyı dizinin ilk elemanı olarak varsayalım
+
+    for (int i = 1; i < size; i++) {
+        if (arr[i] > max) {
+            max = arr[i]; // Dizideki bir eleman, mevcut en büyük sayıdan büyükse, yeni en büyük sayı olarak güncelle
+        }
+    }
+
+    return max;
+}
+
+int main() {
+    int numbers[] = { 7, 3, 11, 5, 9, 2 };
+    int size = sizeof(numbers) / sizeof(numbers[0]);
+
+    int maxNumber = findMax(numbers, size);
+    printf("En buyuk sayi: %d\n", maxNumber);
+
+    return 0;
+}
+
+cevap2:
+#include <stdio.h>
+#include <stdlib.h>
+
+// Bağlı listeyi temsil etmek için düğüm yapısı
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Yeni bir düğüm oluşturur ve veri değerini atar
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Bağlı listeye eleman ekleme
+void insert(struct Node** head, int data) {
+    struct Node* newNode = createNode(data);
+
+    if (*head == NULL) {
+        *head = newNode;
+    }
+    else {
+        struct Node* current = *head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newNode;
+    }
+}
+
+// Bağlı listedeki eleman sayısını bulma
+int countElements(struct Node* head) {
+    int count = 0;
+    struct Node* current = head;
+    
+    while (current != NULL) {
+        count++;
+        current = current->next;
+    }
+    
+    return count;
+}
+
+// Bağlı listeyi ekrana yazdırma
+void printList(struct Node* head) {
+    struct Node* current = head;
+
+    while (current != NULL) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct Node* head = NULL;
+
+    // Bağlı listeye eleman ekleme
+    insert(&head, 1);
+    insert(&head, 2);
+    insert(&head, 3);
+    insert(&head, 4);
+    insert(&head, 5);
+
+    // Bağlı listeyi ekrana yazdırma
+    printf("Bağlı liste: ");
+    printList(head);
+
+    // Bağlı listedeki eleman sayısını bulma
+    int elementCount = countElements(head);
+    printf("Eleman sayısı: %d\n", elementCount);
+
+    return 0;
+}
+
+cevap3 :
+#include <stdio.h>
+
+#define MAX_SIZE 100
+
+// Dizideki tekrar eden elemanları bulan fonksiyon
+void findDuplicates(int arr[], int size) {
+    int hashTable[MAX_SIZE] = { 0 }; // Hash tablosu oluşturulur ve başlangıçta tüm değerler sıfıra atanır
+
+    printf("Tekrar Eden Elemanlar: ");
+    for (int i = 0; i < size; i++) {
+        hashTable[arr[i]]++; // Dizi elemanları hash tablosuna eklenir ve sayacı artırılır
+
+        // Eğer sayacı 2'ye eşit olan bir eleman varsa, bu tekrar eden bir elemandır
+        if (hashTable[arr[i]] == 2) {
+            printf("%d ", arr[i]);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    int numbers[] = { 3, 4, 5, 3, 2, 6, 5, 7, 8, 4, 9, 2, 3 };
+    int size = sizeof(numbers) / sizeof(numbers[0]);
+
+    findDuplicates(numbers, size);
+
+    return 0;
+}
+
+cevap 4 :
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define ALPHABET_SIZE 26
+
+struct TrieNode {
+    struct TrieNode* children[ALPHABET_SIZE];
+    bool is_end_of_word;
+};
+
+struct TrieNode* createNode() {
+    struct TrieNode* node = (struct TrieNode*)malloc(sizeof(struct TrieNode));
+    node->is_end_of_word = false;
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        node->children[i] = NULL;
+    }
+    return node;
+}
+
+void insert(struct TrieNode* root, const char* word) {
+    struct TrieNode* node = root;
+    int length = strlen(word);
+
+    for (int i = 0; i < length; i++) {
+        int index = word[i] - 'a';
+        if (node->children[index] == NULL) {
+            node->children[index] = createNode();
+        }
+        node = node->children[index];
+    }
+    node->is_end_of_word = true;
+}
+
+void findWordsStartingWith(struct TrieNode* root, const char* prefix) {
+    struct TrieNode* node = root;
+    int length = strlen(prefix);
+
+    for (int i = 0; i < length; i++) {
+        int index = prefix[i] - 'a';
+        if (node->children[index] == NULL) {
+            printf("No words found starting with '%s'\n", prefix);
+            return;
+        }
+        node = node->children[index];
+    }
+    printf("Words starting with '%s':\n", prefix);
+    _findWords(node, prefix);
+}
+
+void _findWords(struct TrieNode* node, char* prefix) {
+    if (node->is_end_of_word) {
+        printf("%s\n", prefix);
+    }
+
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        if (node->children[i] != NULL) {
+            char* newPrefix = (char*)malloc(strlen(prefix) + 2);
+            strcpy(newPrefix, prefix);
+            newPrefix[strlen(prefix)] = 'a' + i;
+            newPrefix[strlen(prefix) + 1] = '\0';
+            _findWords(node->children[i], newPrefix);
+            free(newPrefix);
+        }
+    }
+}
+
+int main() {
+    struct TrieNode* root = createNode();
+
+    insert(root, "apple");
+    insert(root, "application");
+    insert(root, "banana");
+    insert(root, "art");
+    insert(root, "ball");
+    insert(root, "cat");
+
+    findWordsStartingWith(root, "app");
+
+    return 0;
+}
